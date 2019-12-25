@@ -28,6 +28,8 @@ require (
 	github.com/samuel/go-thrift v0.0.0-20190219015601-e8b6b52668fe // indirect
 	github.com/streadway/quantile v0.0.0-20150917103942-b0c588724d25 // indirect
 	github.com/stretchr/testify v1.3.0
+	github.com/sunfmin/fanout v0.0.0-20171103081433-ba3f882900e1
+	github.com/theplant/sliceutils v0.0.0-20190905102845-cf1a583707c6
 	github.com/uber-go/atomic v1.4.0 // indirect
 	github.com/uber-go/mapdecode v1.0.0 // indirect
 	github.com/uber-go/tally v3.3.11+incompatible

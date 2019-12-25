@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/pborman/uuid"
+	"github.com/sunfmin/fanout"
+	"github.com/theplant/sliceutils"
 	"github.com/uber-common/cadence-samples/cmd/samples/common"
 	"go.uber.org/cadence/client"
 	"go.uber.org/cadence/worker"
@@ -22,13 +24,25 @@ func startWorkers(h *common.SampleHelper) {
 }
 
 func startWorkflow(h *common.SampleHelper) {
-	workflowOptions := client.StartWorkflowOptions{
-		ID:                              "helloworld_" + uuid.New(),
-		TaskList:                        ApplicationName,
-		ExecutionStartToCloseTimeout:    time.Minute,
-		DecisionTaskStartToCloseTimeout: time.Minute,
+	var ids []string
+	for i := 0; i < 1000; i++ {
+		ids = append(ids, "helloworld_"+uuid.New())
 	}
-	h.StartWorkflow(workflowOptions, Workflow, "Cadence")
+
+	_, err := fanout.ParallelRun(50, func(i interface{}) (r interface{}, err error) {
+		id := i.(string)
+		workflowOptions := client.StartWorkflowOptions{
+			ID:                              id,
+			TaskList:                        ApplicationName,
+			ExecutionStartToCloseTimeout:    time.Minute,
+			DecisionTaskStartToCloseTimeout: time.Minute,
+		}
+		h.StartWorkflow(workflowOptions, Workflow, "Cadence")
+		return
+	}, sliceutils.Wrap(ids))
+	if err != nil {
+		panic(err)
+	}
 }
 
 func main() {
